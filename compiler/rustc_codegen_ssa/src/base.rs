@@ -608,7 +608,7 @@ pub fn codegen_crate<B: ExtraBackendMethods>(
     // Skip crate items and just output metadata in -Z no-codegen mode.
     if tcx.sess.opts.unstable_opts.no_codegen
         || !tcx.sess.opts.output_types.should_codegen()
-        || (tcx.sess.lazy_codegen() && tcx.crate_types().iter().all(|typ| *typ == CrateType::Rlib))
+        || tcx.sess.lazy_codegen()
     {
         debug!(lazy = tcx.sess.lazy_codegen(), "codegen_crate skip");
         let ongoing_codegen = start_async_codegen(backend, tcx, target_cpu, metadata, None);

@@ -746,6 +746,7 @@ impl<'a, 'tcx> EncodeContext<'a, 'tcx> {
                 expn_hashes,
                 def_path_hash_map,
                 specialization_enabled_in: tcx.specialization_enabled_in(LOCAL_CRATE),
+                lazy_codegen: tcx.sess.lazy_codegen(),
             })
         });
 

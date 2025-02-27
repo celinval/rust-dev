@@ -749,6 +749,7 @@ impl Session {
     /// I.e.: bin, dylib, cdylib, staticlib, and proc-macro targets.
     pub fn lazy_codegen(&self) -> bool {
         self.opts.unstable_opts.lazy_codegen
+            && self.opts.crate_types.iter().all(|typ| *typ == CrateType::Rlib)
     }
 
     pub fn must_emit_unwind_tables(&self) -> bool {

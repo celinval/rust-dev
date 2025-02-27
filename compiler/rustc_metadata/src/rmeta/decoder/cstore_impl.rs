@@ -362,6 +362,7 @@ provide! { tcx, def_id, other, cdata,
     is_no_builtins => { cdata.root.no_builtins }
     symbol_mangling_version => { cdata.root.symbol_mangling_version }
     specialization_enabled_in => { cdata.root.specialization_enabled_in }
+    lazy_codegen => { cdata.root.lazy_codegen }
     reachable_non_generics => {
         let reachable_non_generics = tcx
             .exported_symbols(cdata.cnum)

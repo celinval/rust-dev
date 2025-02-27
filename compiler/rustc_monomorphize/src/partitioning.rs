@@ -192,6 +192,7 @@ where
         bug!("unsorted CGUs:\n{names}");
     }
 
+    tracing::error!("*** NUM CGUS: {}", codegen_units.len());
     codegen_units
 }
 

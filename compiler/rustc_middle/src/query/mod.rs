@@ -1699,6 +1699,12 @@ rustc_queries! {
         separate_provide_extern
     }
 
+    /// Checks if the crate encodes all MIR items.
+    query lazy_codegen(_: CrateNum) -> bool {
+        desc { "looking up if the crate encodes the MIR of all items"}
+        separate_provide_extern
+    }
+
     query specializes(_: (DefId, DefId)) -> bool {
         desc { "computing whether impls specialize one another" }
     }

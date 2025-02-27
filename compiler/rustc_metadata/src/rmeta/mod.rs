@@ -292,6 +292,8 @@ pub(crate) struct CrateRoot {
     symbol_mangling_version: SymbolManglingVersion,
 
     specialization_enabled_in: bool,
+    /// Store whether we skipped codegen of this crate.
+    lazy_codegen: bool,
 }
 
 /// On-disk representation of `DefId`.

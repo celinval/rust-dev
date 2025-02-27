@@ -1794,6 +1794,8 @@ pub fn provide(providers: &mut Providers) {
         is_doc_hidden,
         is_doc_notable_trait,
         intrinsic_raw,
+        // FIXME(celinval): find a better place for this
+        lazy_codegen: |tcx, _| tcx.sess.lazy_codegen(),
         ..*providers
     }
 }

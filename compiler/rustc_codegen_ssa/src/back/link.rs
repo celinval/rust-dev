@@ -320,7 +320,7 @@ fn link_rlib<'a>(
 
     for m in &codegen_results.modules {
         if let Some(obj) = m.object.as_ref()
-            && !sess.lazy_codegen()
+            && !sess.building_lazy_codegen()
         {
             ab.add_file(obj);
         }

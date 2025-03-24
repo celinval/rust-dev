@@ -209,8 +209,14 @@ fn exported_symbols_provider_local(
     if allocator_kind_for_codegen(tcx).is_some() {
         for symbol_name in ALLOCATOR_METHODS
             .iter()
-            .map(|method| format!("__rust_{}", method.name))
-            .chain(["__rust_alloc_error_handler".to_string(), OomStrategy::SYMBOL.to_string()])
+            .flat_map(|method| {
+                [format!("__rust_{}", method.name), format!("__rdl_{}", method.name)]
+            })
+            .chain([
+                "__rust_alloc_error_handler".to_string(),
+                OomStrategy::SYMBOL.to_string(),
+                "__rg_oom".to_string(),
+            ])
         {
             let exported_symbol = ExportedSymbol::NoDefId(SymbolName::new(tcx, &symbol_name));
 

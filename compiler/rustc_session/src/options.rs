@@ -1854,6 +1854,8 @@ options! {
         "seed layout randomization"),
     lazy_codegen: bool = (false, parse_bool, [TRACKED],
         "Do not include object code in the rlib. Instead store the entire MIR (default: no)"),
+    lazy_codegen_info: bool = (false, parse_bool, [UNTRACKED],
+        "Print info related to lazy-codegen"),
     link_directives: bool = (true, parse_bool, [TRACKED],
         "honor #[link] directives in the compiled crate (default: yes)"),
     link_native_libraries: bool = (true, parse_bool, [UNTRACKED],

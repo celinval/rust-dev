@@ -231,7 +231,6 @@ use rustc_middle::util::Providers;
 use rustc_middle::{bug, span_bug};
 use rustc_session::Limit;
 use rustc_session::config::EntryFnType;
-use rustc_span::def_id::LOCAL_CRATE;
 use rustc_span::source_map::{Spanned, dummy_spanned, respan};
 use rustc_span::{DUMMY_SP, Span, sym};
 use tracing::{debug, instrument, trace};
@@ -1212,7 +1211,7 @@ fn collect_items_of_instance<'tcx>(
     mode: CollectionMode,
 ) -> (MonoItems<'tcx>, MonoItems<'tcx>) {
     // This item is getting monomorphized, do mono-time checks.
-    tcx.ensure_ok().check_mono_item(instance);
+    tcx.ensure().check_mono_item(instance);
 
     let body = tcx.instance_mir(instance.def);
     // Naively, in "used" collection mode, all functions get added to *both* `used_items` and
@@ -1605,14 +1604,6 @@ pub(crate) fn collect_crate_mono_items<'tcx>(
     tcx: TyCtxt<'tcx>,
     strategy: MonoItemCollectionStrategy,
 ) -> (Vec<MonoItem<'tcx>>, UsageMap<'tcx>) {
-    if tcx.sess.lazy_codegen() {
-        // If we are in the `alloc` crate, we need to include the allocation functions:
-        // __rust_no_alloc_error_handler / __rust_alloc / __rust_dealloc ...
-        tracing::warn!(name=?tcx.crate_name(LOCAL_CRATE), "collect_crate_mono_items skip");
-        // We skip codegen if just producing rlib.
-        return (vec![], UsageMap::new());
-    }
-    tracing::warn!(name=?tcx.crate_name(LOCAL_CRATE), types=?tcx.crate_types(), "collect_crate_mono_items codegen");
     let _prof_timer = tcx.prof.generic_activity("monomorphization_collector");
 
     let roots = tcx

@@ -192,7 +192,6 @@ where
         bug!("unsorted CGUs:\n{names}");
     }
 
-    tracing::error!("*** NUM CGUS: {}", codegen_units.len());
     codegen_units
 }
 
@@ -1115,7 +1114,25 @@ where
     }
 }
 
+macro_rules! lazy_info {
+    ($tcx:tt, $fmt:literal, $($args:expr),+) => {
+        if $tcx.sess.opts.unstable_opts.lazy_codegen_info {
+            eprintln!($fmt, $($args),+);
+        }
+    };
+}
+
 fn collect_and_partition_mono_items(tcx: TyCtxt<'_>, (): ()) -> (&DefIdSet, &[CodegenUnit<'_>]) {
+    if tcx.sess.building_lazy_codegen() {
+        lazy_info!(tcx, "[LAZY]: Skip codegen `{}`", tcx.crate_name(LOCAL_CRATE));
+        // We skip codegen if just producing rlib.
+        let cgu_name_builder = &mut CodegenUnitNameBuilder::new(tcx);
+        let cgu_name = fallback_cgu_name(cgu_name_builder);
+        let cgu = CodegenUnit::new(cgu_name);
+        return (tcx.arena.alloc(DefIdSet::new()), tcx.arena.alloc_from_iter([cgu]));
+    }
+    lazy_info!(tcx, "[LAZY]: Codegen `{}` ({:?})", tcx.crate_name(LOCAL_CRATE), tcx.crate_types());
+
     let collection_strategy = match tcx.sess.opts.unstable_opts.print_mono_items {
         Some(ref s) => {
             let mode = s.to_lowercase();
@@ -1237,6 +1254,11 @@ fn collect_and_partition_mono_items(tcx: TyCtxt<'_>, (): ()) -> (&DefIdSet, &[Co
         }
     }
 
+    lazy_info!(tcx, "[LAZY] Crate `{}`: {} items / {} cgus",
+        tcx.crate_name(LOCAL_CRATE),
+        mono_items.len(),
+        codegen_units.len()
+    );
     (tcx.arena.alloc(mono_items), codegen_units)
 }
 

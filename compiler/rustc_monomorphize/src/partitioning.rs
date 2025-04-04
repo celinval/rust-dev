@@ -1126,12 +1126,17 @@ fn dump_codegen_stats(tcx: TyCtxt<'_>, mono_items: &DefIdSet, cgus: &[CodegenUni
     let base_filepath = tcx.output_filenames(()).path(rustc_session::config::OutputType::Object);
     let base_filename = base_filepath.as_path();
     let fname = base_filename.with_extension("stats.csv");
-    std::fs::write(&fname, &format!("{}, {}, {}, {}\n",
-        tcx.crate_name(LOCAL_CRATE),
-        mono_items.len(),
-        cgus.len(),
-        base_filename.file_name().unwrap().to_string_lossy()),
-    ).unwrap_or_else(|e| panic!("{e}: File `{}`", fname.display()));
+    std::fs::write(
+        &fname,
+        &format!(
+            "{}, {}, {}, {}\n",
+            tcx.crate_name(LOCAL_CRATE),
+            mono_items.len(),
+            cgus.len(),
+            base_filename.file_name().unwrap().to_string_lossy()
+        ),
+    )
+    .unwrap_or_else(|e| panic!("{e}: File `{}`", fname.display()));
 }
 
 fn collect_and_partition_mono_items(tcx: TyCtxt<'_>, (): ()) -> (&DefIdSet, &[CodegenUnit<'_>]) {
@@ -1141,7 +1146,8 @@ fn collect_and_partition_mono_items(tcx: TyCtxt<'_>, (): ()) -> (&DefIdSet, &[Co
         let cgu_name_builder = &mut CodegenUnitNameBuilder::new(tcx);
         let cgu_name = fallback_cgu_name(cgu_name_builder);
         let cgu = CodegenUnit::new(cgu_name);
-        let (mono_items, cgus) = (tcx.arena.alloc(DefIdSet::new()), tcx.arena.alloc_from_iter([cgu]));
+        let (mono_items, cgus) =
+            (tcx.arena.alloc(DefIdSet::new()), tcx.arena.alloc_from_iter([cgu]));
         dump_codegen_stats(tcx, mono_items, cgus);
         return (mono_items, cgus);
     }

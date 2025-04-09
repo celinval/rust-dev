@@ -1116,7 +1116,7 @@ where
 
 macro_rules! lazy_info {
     ($tcx:tt, $fmt:literal, $($args:expr),+) => {
-        if $tcx.sess.opts.unstable_opts.lazy_codegen_info {
+        if $tcx.sess.codegen_info() {
             eprintln!($fmt, $($args),+);
         }
     };

@@ -671,7 +671,12 @@ pub mod parse {
                 *slot = i;
                 true
             }
-            None => false,
+            None => {
+                if let Ok(Some(threads)) = std::env::var("RUSTC_THREADS").map(|s| s.parse().ok()) {
+                    *slot = threads;
+                }
+                false
+            }
         };
         // We want to cap the number of threads here to avoid large numbers like 999999 and compiler panics.
         // This solution was suggested here https://github.com/rust-lang/rust/issues/117638#issuecomment-1800925067

@@ -742,13 +742,22 @@ impl Session {
 
     /// Return whether to encode MIR of all functions into the crate metadata
     pub fn always_encode_mir(&self) -> bool {
-        self.opts.unstable_opts.always_encode_mir || self.opts.unstable_opts.lazy_codegen
+        self.opts.unstable_opts.always_encode_mir || self.building_lazy_codegen()
     }
 
     /// Delay codegen stage to building crates that need their object file.
     /// I.e.: bin, dylib, cdylib, staticlib, and proc-macro targets.
     pub fn building_lazy_codegen(&self) -> bool {
-        self.opts.unstable_opts.lazy_codegen && self.opts.crate_types == &[CrateType::Rlib]
+        let env_set = env::var("RUSTC_LAZY_CODEGEN").map_or(false, |v| v == "true");
+        (env_set || self.opts.unstable_opts.lazy_codegen)
+            && self.opts.crate_types == &[CrateType::Rlib]
+    }
+
+    /// FIXME(celinval): Hack to store info into the file.
+    pub fn codegen_info(&self) -> bool {
+        let env_set = env::var("RUSTC_CODEGEN_INFO").map_or(false, |v| v == "true");
+        (env_set || self.opts.unstable_opts.lazy_codegen_info)
+            && self.opts.crate_types == &[CrateType::Rlib]
     }
 
     pub fn must_emit_unwind_tables(&self) -> bool {

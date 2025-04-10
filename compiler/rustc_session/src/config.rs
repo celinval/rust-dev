@@ -2356,6 +2356,11 @@ pub fn build_session_options(early_dcx: &mut EarlyDiagCtxt, matches: &getopts::M
         cg.codegen_units,
     );
 
+    if let Ok(Some(threads)) = std::env::var("RUSTC_THREADS").map(|s| s.parse().ok()) {
+        tracing::warn!(?threads, max=?parse::MAX_THREADS_CAP, "Override threads");
+        unstable_opts.threads = cmp::min(threads, parse::MAX_THREADS_CAP);
+    }
+
     if unstable_opts.threads == 0 {
         early_dcx.early_fatal("value for threads must be a positive non-zero integer");
     }
